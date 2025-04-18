@@ -1,15 +1,13 @@
 name: Deploy to Server
-
 on:
   push:
-    branches: [ main ]  # lub master, zależnie od nazwy twojej głównej gałęzi
-
+    branches: [ main ] # lub master, zależnie od nazwy twojej głównej gałęzi
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        
+      
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -20,31 +18,31 @@ jobs:
         
       - name: Build project
         run: npm run build
-        - name: Repo File Sync
         
-  # You may pin to the exact commit or the version.
-  # uses: StudistCorporation/actions-repo-file-sync@1d4d62e6a18806f575b8611684f6d1cac49fc38f
-  uses: StudistCorporation/actions-repo-file-sync@v0.0.4
-  with:
-    # The `token` to used for authenticating with GitHub.
-    token: # optional
-    # The `username` to use in the git commit.
-    username: # optional
-    # The `email` to use in the git commit.
-    email: # optional
-    # The `reviewers` to use in the pull request to be created.
-    reviewers: # optional
-    # The `team_reviewers` to use in the pull request to be created.
-    team_reviewers: # optional
-    # The `work_ref` to use in a branch for the pull request to be created.
-    work_ref: # optional
-        
+      - name: Repo File Sync
+        # You may pin to the exact commit or the version.
+        # uses: StudistCorporation/actions-repo-file-sync@1d4d62e6a18806f575b8611684f6d1cac49fc38f
+        uses: StudistCorporation/actions-repo-file-sync@v0.0.4
+        with:
+          # The `token` to used for authenticating with GitHub.
+          token: ${{ secrets.GITHUB_TOKEN }} # optional
+          # The `username` to use in the git commit.
+          username: ${{ github.actor }} # optional
+          # The `email` to use in the git commit.
+          email: ${{ github.actor }}@users.noreply.github.com # optional
+          # The `reviewers` to use in the pull request to be created.
+          reviewers: "" # optional
+          # The `team_reviewers` to use in the pull request to be created.
+          team_reviewers: "" # optional
+          # The `work_ref` to use in a branch for the pull request to be created.
+          work_ref: "" # optional
+          
       - name: Deploy to server
         uses: easingthemes/ssh-deploy@main
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           ARGS: "-rltgoDzvO --delete"
-          SOURCE: "dist/"  # katalog z zbudowanym projektem
+          SOURCE: "dist/" # katalog z zbudowanym projektem
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           TARGET: ${{ secrets.REMOTE_TARGET }}
